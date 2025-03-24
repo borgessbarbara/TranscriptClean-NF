@@ -1,0 +1,67 @@
+Mar-24 02:22:21.081 [main] INFO  com.askimed.nf.test.App - nf-test 0.9.2
+Mar-24 02:22:21.094 [main] INFO  com.askimed.nf.test.App - Arguments: [test, modules/local/transcriptclean]
+Mar-24 02:22:21.874 [main] INFO  com.askimed.nf.test.App - Nextflow Version: 24.10.5
+Mar-24 02:22:21.875 [main] INFO  com.askimed.nf.test.commands.RunTestsCommand - Load config from file /workspaces/TranscriptClean-NF/nf-test.config...
+Mar-24 02:22:22.307 [main] INFO  com.askimed.nf.test.lang.dependencies.DependencyResolver - Loaded 10 files from directory /workspaces/TranscriptClean-NF in 0.025 sec
+Mar-24 02:22:22.308 [main] INFO  com.askimed.nf.test.lang.dependencies.DependencyResolver - Found 1 files containing tests.
+Mar-24 02:22:22.308 [main] DEBUG com.askimed.nf.test.lang.dependencies.DependencyResolver - Found files: [/workspaces/TranscriptClean-NF/modules/local/transcriptclean/tests/main.nf.test]
+Mar-24 02:22:22.636 [main] ERROR com.askimed.nf.test.commands.RunTestsCommand - Running tests failed.
+org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed:
+/workspaces/TranscriptClean-NF/modules/local/transcriptclean/tests/main.nf.test: 158: Unexpected input: '{\n        when {\n            process {\n                """\n                params.input_sam = "modules/nf-core/transcriptclean/tests/example_files/GM12878_chr1.sam"\n                params.input_fasta = "modules/nf-core/transcriptclean/tests/example_files/chr1.fa"\n                params.input_gtf = "modules/nf-core/transcriptclean/tests/example_files/GM12878_chr1.gtf"\n                params.input_vcf = "modules/nf-core/transcriptclean/tests/example_files/GM12878_chr1.vcf"\n                params.create_splice_junctions = true\n                params.variant_aware = true\n                params.splice_junction_correction = true\n                params.outdir = "results"\n                """\n            }\n        }\n        then {\n            assertAll(\n                { assert process.success },\n                { assert snapshot(process.out).match() },\n                { assert file("results/GM12878_chr1_spliceJns.txt").exists() },\n                { assert file("results/GM12878_chr1_TranscriptClean.sam").exists() },\n                { assert file("results/GM12878_chr1_TranscriptClean.fasta").exists() },\n                { assert file("results/GM12878_chr1_TranscriptClean.TE.log").exists() },\n                { assert file("results/GM12878_chr1_TranscriptClean.log").exists() }\n            )\n        }\n    }\n}' @ line 158, column 1.
+   }
+   ^
+
+1 error
+
+	at org.codehaus.groovy.control.ErrorCollector.failIfErrors(ErrorCollector.java:292)
+	at org.codehaus.groovy.control.ErrorCollector.addFatalError(ErrorCollector.java:148)
+	at org.apache.groovy.parser.antlr4.AstBuilder.collectSyntaxError(AstBuilder.java:4301)
+	at org.apache.groovy.parser.antlr4.AstBuilder.access$000(AstBuilder.java:176)
+	at org.apache.groovy.parser.antlr4.AstBuilder$1.syntaxError(AstBuilder.java:4312)
+	at groovyjarjarantlr4.v4.runtime.ProxyErrorListener.syntaxError(ProxyErrorListener.java:44)
+	at groovyjarjarantlr4.v4.runtime.Parser.notifyErrorListeners(Parser.java:543)
+	at groovyjarjarantlr4.v4.runtime.DefaultErrorStrategy.notifyErrorListeners(DefaultErrorStrategy.java:154)
+	at org.apache.groovy.parser.antlr4.internal.DescriptiveErrorStrategy.reportNoViableAlternative(DescriptiveErrorStrategy.java:92)
+	at groovyjarjarantlr4.v4.runtime.DefaultErrorStrategy.reportError(DefaultErrorStrategy.java:139)
+	at org.apache.groovy.parser.antlr4.GroovyParser.pathExpression(GroovyParser.java:9500)
+	at org.apache.groovy.parser.antlr4.GroovyParser.postfixExpression(GroovyParser.java:8108)
+	at org.apache.groovy.parser.antlr4.GroovyParser.expression(GroovyParser.java:8650)
+	at org.apache.groovy.parser.antlr4.GroovyParser.commandExpression(GroovyParser.java:9299)
+	at org.apache.groovy.parser.antlr4.GroovyParser.statementExpression(GroovyParser.java:8067)
+	at org.apache.groovy.parser.antlr4.GroovyParser.statement(GroovyParser.java:6915)
+	at org.apache.groovy.parser.antlr4.GroovyParser.scriptStatement(GroovyParser.java:514)
+	at org.apache.groovy.parser.antlr4.GroovyParser.scriptStatements(GroovyParser.java:421)
+	at org.apache.groovy.parser.antlr4.GroovyParser.compilationUnit(GroovyParser.java:357)
+	at org.apache.groovy.parser.antlr4.AstBuilder.buildCST(AstBuilder.java:250)
+	at org.apache.groovy.parser.antlr4.AstBuilder.buildCST(AstBuilder.java:228)
+	at org.apache.groovy.parser.antlr4.AstBuilder.buildAST(AstBuilder.java:269)
+	at org.apache.groovy.parser.antlr4.Antlr4ParserPlugin.buildAST(Antlr4ParserPlugin.java:58)
+	at org.codehaus.groovy.control.SourceUnit.buildAST(SourceUnit.java:256)
+	at java.base/java.util.Iterator.forEachRemaining(Iterator.java:133)
+	at java.base/java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1845)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
+	at org.codehaus.groovy.control.CompilationUnit.buildASTs(CompilationUnit.java:667)
+	at org.codehaus.groovy.control.CompilationUnit.compile(CompilationUnit.java:633)
+	at groovy.lang.GroovyClassLoader.doParseClass(GroovyClassLoader.java:389)
+	at groovy.lang.GroovyClassLoader.lambda$parseClass$3(GroovyClassLoader.java:332)
+	at org.codehaus.groovy.runtime.memoize.StampedCommonCache.compute(StampedCommonCache.java:163)
+	at org.codehaus.groovy.runtime.memoize.StampedCommonCache.getAndPut(StampedCommonCache.java:154)
+	at groovy.lang.GroovyClassLoader.parseClass(GroovyClassLoader.java:330)
+	at groovy.lang.GroovyShell.parseClass(GroovyShell.java:526)
+	at groovy.lang.GroovyShell.parse(GroovyShell.java:538)
+	at groovy.lang.GroovyShell.evaluate(GroovyShell.java:426)
+	at groovy.lang.GroovyShell.evaluate(GroovyShell.java:470)
+	at com.askimed.nf.test.lang.TestSuiteBuilder.parse(TestSuiteBuilder.java:105)
+	at com.askimed.nf.test.core.TestSuiteResolver.parse(TestSuiteResolver.java:35)
+	at com.askimed.nf.test.commands.RunTestsCommand.execute(RunTestsCommand.java:257)
+	at com.askimed.nf.test.commands.AbstractCommand.call(AbstractCommand.java:43)
+	at com.askimed.nf.test.commands.AbstractCommand.call(AbstractCommand.java:18)
+	at picocli.CommandLine.executeUserObject(CommandLine.java:1953)
+	at picocli.CommandLine.access$1300(CommandLine.java:145)
+	at picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2352)
+	at picocli.CommandLine$RunLast.handle(CommandLine.java:2346)
+	at picocli.CommandLine$RunLast.handle(CommandLine.java:2311)
+	at picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2179)
+	at picocli.CommandLine.execute(CommandLine.java:2078)
+	at com.askimed.nf.test.App.run(App.java:39)
+	at com.askimed.nf.test.App.main(App.java:46)

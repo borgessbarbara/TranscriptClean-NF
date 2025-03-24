@@ -1,0 +1,32 @@
+repository_type: pipeline
+
+nf_core_version: 3.3.0.dev0
+
+lint:
+  files_unchanged:
+    - .github/CONTRIBUTING.md
+    - assets/sendmail_template.txt
+    - .github/CONTRIBUTING.md
+    - assets/sendmail_template.txt
+  multiqc_config: false
+  files_exist:
+    - conf/igenomes.config
+    - conf/igenomes_ignored.config
+    - assets/multiqc_config.yml
+    - conf/igenomes.config
+    - conf/igenomes_ignored.config
+    - assets/multiqc_config.yml
+
+template:
+  org: nf-core
+  name: transcriptclean
+  description: An implementation of TranscriptClean tool into Nextflow
+  author: "B\xE1rbara Borges"
+  version: 1.0.0dev
+  force: true
+  outdir: nextflow
+  skip_features:
+    - igenomes
+    - multiqc
+    - fastqc
+  is_nfcore: true
