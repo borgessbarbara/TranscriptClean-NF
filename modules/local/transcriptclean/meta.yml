@@ -59,6 +59,10 @@ input:
         type: file
         description: (Optional) GTF file for generating splice junction file.
         pattern: "*.{vcf}"
+    - transcriptclean_logs:
+        type: file
+        description: Output files from TranscriptClean for report
+        pattern: "*.{clean.TE.log, clean.log}"
 
 ## TODO nf-core: Add a description of all of the variables used as output
 output:
@@ -88,11 +92,15 @@ output:
       - TE_error_log:
           type: file
           description: Transcript error log file
-          pattern: "*.{TE.log}"
+          pattern: "*.{clean.TE.log}"
       - TE_log:
           type: file
           description: Transcript log file
-          pattern: "*.{log}"
+          pattern: "*.{clean.log}"
+      - report:
+          type: file
+          description: PDF TranscriptClean Report from logs
+          pattern: "*.{_report.pdf}"
   - versions:
       - "versions.yml":
           type: file

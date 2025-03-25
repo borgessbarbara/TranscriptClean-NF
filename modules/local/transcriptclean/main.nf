@@ -56,31 +56,25 @@ process TRANSCRIPTCLEAN {
     tuple val(meta), path(sam), path(fasta), path(vcf), path(splice_junctions), val(params)
 
     output:
-    tuple val(meta), path("*_TranscriptClean.sam"), emit: sam
-    tuple val(meta), path("*_TranscriptClean.fasta"), emit: fasta
-    tuple val(meta), path("*_TranscriptClean.TE.log"), emit: log
-    tuple val(meta), path("*_TranscriptClean.log"), emit: log
+    tuple val(meta), path("*.sam"), emit: sam
+    tuple val(meta), path("*.fasta"), emit: fasta
+    tuple val(meta), path("*.TE.log"), emit: log
+    tuple val(meta), path("*.log"), emit: log
     path  "versions.yml",           emit: versions
-
-    when:
-    params.variant_aware || params.splice_junction_correction
 
     script:
     args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: "${meta.id}"
     def variant_flag = params.variant_aware && vcf ? "--variants ${vcf}" : ''
-    def splice_flag = params.splice_junction_correction && splice_junctions ? "--spliceJns ${splice_junctions}" : ''
-    def other_params = params.other_params ? params.other_params : ''
+    def splice_flag = params.sj_correction && splice_junctions ? "--spliceJns ${splice_junctions}" : ''
+    // def other_params = params.other_params ? params.other_params : ''
     // test if it is actually transcriptclean --version
     """
     python home/biodocker/TranscriptClean-2.0.2/TranscriptClean.py \\
         --SAM ${sam} \\
         --genome ${fasta} \\
-        ${variant_flag} \\
-        ${splice_flag} \\
-        ${other_params} \\
-        --outprefix "${prefix}" \\
         $args
+        --outprefix "${prefix}" \\
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -104,8 +98,43 @@ process TRANSCRIPTCLEAN {
     """
 }
 
-// Add process to generate report later :(
+process GENERATE_REPORT {
+    tag "Generate TranscriptClean report"
+    label 'process_high'
 
-/* process GENERATE_REPORT {
-    
-} */
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'biocontainers/transcriptclean:v2.0.2_cv1':
+        'biocontainers/transcriptclean:v2.0.2_cv1' }"
+
+    input:
+    tuple val(meta), path(transcriptclean_logs)
+
+    output:
+    tuple val(meta), path("*_report.pdf"), emit: pdf
+    path  "versions.yml",          emit: versions
+
+    script:
+    args = task.ext.args ?: ''
+    prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    Rscript home/biodocker/TranscriptClean-2.0.2/generate_report.R \\
+    ../results/${prefix}
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        transcriptclean: \$(echo \$(transcriptclean --version 2>&1) | sed 's/^.*transcriptclean //; s/Using.*\$//' ))
+    END_VERSIONS
+    """
+
+    stub:
+    args = task.ext.args ?: ''
+    prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    touch "${prefix}"_report.pdf
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        transcriptclean: \$(echo \$(transcriptclean --version 2>&1) | sed 's/^.*transcriptclean //; s/Using.*\$//' ))
+    END_VERSIONS
+    """
+} 

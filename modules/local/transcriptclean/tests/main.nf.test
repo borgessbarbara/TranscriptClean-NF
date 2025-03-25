@@ -1,0 +1,43 @@
+nextflow_process {
+
+    name "Test Process EXTRACT_SPLICE_JUNCTIONS"
+    script "modules/local/main.nf"
+    process "EXTRACT_SPLICE_JUNCTIONS"
+
+    test("Should create splice junction tabular files in .txt from a GTF input") {
+
+        when {
+            process {
+                """
+                input[0] = [ [ id: test, create_splice_junctions:true ], //meta map
+                file(params.input_gtf + 'TranscriptClean-NF/modules/local/transcriptclean/tests/example_files/gencode.v15.annotation.chr1.gtf', checkIfExists: true)
+                ]
+                input[1] = [ [ file(params.input_fasta + 'TranscriptClean-NF/modules/local/transcriptclean/tests/example_files/chr1.fa'), checkIfExists: true ] 
+                ]
+                """
+            }
+        }
+// stopped here
+        then {
+
+            //check if test case succeeded
+            assert process.success
+            //analyze trace file
+            assert process.trace.tasks().size() == 1
+            with(process.out) {
+                // check if emitted output has been created
+                assert index.size() == 1
+                // count amount of created files
+                assert path(index.get(0)).list().size() == 16
+                // parse info.json file
+                def info = path(index.get(0)+'/info.json').json
+                assert info.num_kmers == 375730
+                assert info.seq_length == 443050
+                //verify md5 checksum
+                assert path(index.get(0)+'/info.json').md5 == "80831602e2ac825e3e63ba9df5d23505"
+            }
+        }
+
+    }
+
+}
