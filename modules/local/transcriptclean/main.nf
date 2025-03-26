@@ -53,12 +53,12 @@ process TRANSCRIPTCLEAN {
         'biocontainers/transcriptclean:v2.0.2_cv1' }"
 
     input:
-    tuple val(meta), path(sam), path(fasta), path(vcf), path(splice_junctions), val(params)
+    tuple val(meta), path(sam), path(fasta), path(vcf), path(splice_junctions)
 
     output:
     tuple val(meta), path("*.sam"), emit: sam
     tuple val(meta), path("*.fasta"), emit: fasta
-    tuple val(meta), path("*.TE.log"), emit: log
+    tuple val(meta), path("*.TE.log"), emit: TE.log
     tuple val(meta), path("*.log"), emit: log
     path  "versions.yml",           emit: versions
 
