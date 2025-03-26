@@ -72,11 +72,10 @@ workflow PIPELINE_INITIALISATION {
         .map {
             meta, sam, fasta ->
                 if (sam + fasta) {
-                    return [ meta.id, meta + [  ],
+                    return [ meta.id,
                      [ sam, fasta ] ] 
-                } else if (!sam + !fasta) {
-                    return [ meta.id, meta + [  ],
-                     [ sam, fasta] ]
+                } else {
+                    error("ERROR: Required files not found. You need to input a SAM and a FASTA file.")
                 }
         }
         .groupTuple()

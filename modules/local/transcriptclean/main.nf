@@ -73,8 +73,10 @@ process TRANSCRIPTCLEAN {
     python home/biodocker/TranscriptClean-2.0.2/TranscriptClean.py \\
         --SAM ${sam} \\
         --genome ${fasta} \\
-        $args
+        ${variant_flag} \\
+        ${splice_flag} \\
         --outprefix "${prefix}" \\
+        $args 
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
