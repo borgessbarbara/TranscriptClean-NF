@@ -13,21 +13,21 @@
                 "errorMessage": "Sample name must be provided and cannot contain spaces",
                 "meta": ["id"]
             },
-            "fastq_1": {
+            "sam": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
-                "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "pattern": "^\\S+\\.sam$",
+                "errorMessage": "SAM file must be provided and cannot contain spaces and must have extension '.sam'"
             },
-            "fastq_2": {
+            "fasta": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "pattern": "^\\S+\\.f(ast)?a$",
+                "errorMessage": "FASTA file for must be provided and cannot contain spaces and must have extension '.fa' or '.fasta'"
             }
         },
-        "required": ["sample", "fastq_1"]
+        "required": ["sample", "sam", "fasta"]
     }
 }
