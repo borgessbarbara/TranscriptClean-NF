@@ -7,6 +7,7 @@ include { TRANSCRIPTCLEAN; EXTRACT_SPLICE_JUNCTIONS; GENERATE_REPORT } from '../
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_transcriptclean_pipeline'
+include { getWorkflowVersion } from '../subworkflows/nf-core/utils_nfcore_pipeline/main.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -23,25 +24,33 @@ workflow RUN_TRANSCRIPTCLEAN {
 
     ch_versions = Channel.empty()
 
-    Channel.fromPath(gtf).ifEmpty(null).set  { ch_gtf }
-    Channel.fromPath(splice_junctions).ifEmpty(null).set { ch_sjs }
-    Channel.fromPath(vcf).ifEmpty(null).set  { ch_vcf }
+    if (params.gtf) {
+        Channel.fromPath(params.gtf).ifEmpty(null).set  { ch_gtf } 
+    }
+    
+    if (params.splice_junctions) {
+        Channel.fromPath(params.splice_junctions).ifEmpty(null).set { ch_sjs } 
+    }
 
-    if (params.extract_sjs && gtf && params.sj_correction){
+    if (params.vcf) {
+        Channel.fromPath(params.vcf).ifEmpty(null).set  { ch_vcf }
+    }
+    
+    if (params.extract_sjs && params.gtf && params.sj_correction){
         EXTRACT_SPLICE_JUNCTIONS(ch_gtf.combine(ch_samplesheet.map{it[1]})).set { ch_ex_sjs }
         TRANSCRIPTCLEAN(ch_samplesheet.combine(ch_ex_sjs.out.map{it})).set { ch_transcriptclean_res }
         GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}).set { ch_report }
-    } else if (params.extract_sjs && gtf && params.sj_correction && params.variant_aware && vcf) {
+    } else if (params.extract_sjs && params.gtf && params.sj_correction && params.variant_aware && params.vcf) {
         EXTRACT_SPLICE_JUNCTIONS(ch_gtf.combine(ch_samplesheet.map{it[1]})).set { ch_ex_sjs }
         TRANSCRIPTCLEAN(ch_samplesheet.combine(ch_ex_sjs.out.map{it}, ch_vcf)).set { ch_transcriptclean_res }
         GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}).set { ch_report }
-    } else if (params.sj_correction && splice_junctions){
+    } else if (params.sj_correction && params.splice_junctions){
         TRANSCRIPTCLEAN(ch_samplesheet.combine(ch_sjs)).set { ch_transcriptclean_res }
         GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}).set { ch_report }
-    } else if (params.sj_correction && params.variant_aware && splice_junctions && vcf){
+    } else if (params.sj_correction && params.variant_aware && params.splice_junctions && params.vcf){
         TRANSCRIPTCLEAN(ch_samplesheet.combine(ch_sjs, ch_vcf)).set { ch_transcriptclean_res }
         GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}).set { ch_report }
-    } else if (params.variant_aware && vcf) {
+    } else if (params.variant_aware && params.vcf) {
         TRANSCRIPTCLEAN(ch_samplesheet.combine(ch_vcf)).set { ch_transcriptclean_res }
         GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}).set { ch_report }
     } else {
@@ -65,7 +74,7 @@ workflow RUN_TRANSCRIPTCLEAN {
     extracted_sjs = ch_ex_sjs.out.ifEmpty(null)
     transcriptclean_results = ch_transcriptclean_res.OUT
     transcriptclean_report = ch_report.out
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
+    versions       = ch_collated_versions                 // channel: [ path(versions.yml) ]
 
 }
 
