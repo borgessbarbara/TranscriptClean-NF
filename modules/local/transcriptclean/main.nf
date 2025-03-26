@@ -58,8 +58,7 @@ process TRANSCRIPTCLEAN {
     output:
     tuple val(meta), path("*.sam"), emit: sam
     tuple val(meta), path("*.fasta"), emit: fasta
-    tuple val(meta), path("*.TE.log"), emit: TE.log
-    tuple val(meta), path("*.log"), emit: log
+    tuple val(meta), path("*.TE.log"), path("*.log"), emit: log
     path  "versions.yml",           emit: versions
 
     script:
