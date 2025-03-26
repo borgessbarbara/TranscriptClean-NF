@@ -35,27 +35,27 @@ workflow RUN_TRANSCRIPTCLEAN {
     if (params.vcf) {
         Channel.fromPath(params.vcf).ifEmpty(null).set  { ch_vcf }
     }
-    
+
     if (params.extract_sjs && params.gtf && params.sj_correction){
         EXTRACT_SPLICE_JUNCTIONS(ch_gtf.combine(ch_samplesheet.map{it[1]})).set { ch_ex_sjs }
         TRANSCRIPTCLEAN(ch_samplesheet.combine(ch_ex_sjs.out.map{it})).set { ch_transcriptclean_res }
-        GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}).set { ch_report }
+        GENERATE_REPORT(ch_transcriptclean_res.collect()).set { ch_report }
     } else if (params.extract_sjs && params.gtf && params.sj_correction && params.variant_aware && params.vcf) {
         EXTRACT_SPLICE_JUNCTIONS(ch_gtf.combine(ch_samplesheet.map{it[1]})).set { ch_ex_sjs }
         TRANSCRIPTCLEAN(ch_samplesheet.combine(ch_ex_sjs.out.map{it}, ch_vcf)).set { ch_transcriptclean_res }
-        GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}).set { ch_report }
+        GENERATE_REPORT(ch_transcriptclean_res.collect()).set { ch_report }
     } else if (params.sj_correction && params.splice_junctions){
         TRANSCRIPTCLEAN(ch_samplesheet.combine(ch_sjs)).set { ch_transcriptclean_res }
-        GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}).set { ch_report }
+        GENERATE_REPORT(ch_transcriptclean_res.collect()).set { ch_report }
     } else if (params.sj_correction && params.variant_aware && params.splice_junctions && params.vcf){
         TRANSCRIPTCLEAN(ch_samplesheet.combine(ch_sjs, ch_vcf)).set { ch_transcriptclean_res }
-        GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}).set { ch_report }
+        GENERATE_REPORT(ch_transcriptclean_res.collect()).set { ch_report }
     } else if (params.variant_aware && params.vcf) {
         TRANSCRIPTCLEAN(ch_samplesheet.combine(ch_vcf)).set { ch_transcriptclean_res }
-        GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}).set { ch_report }
+        GENERATE_REPORT(ch_transcriptclean_res.collect()).set { ch_report }
     } else {
         TRANSCRIPTCLEAN(ch_samplesheet).set { ch_transcriptclean_res }
-        GENERATE_REPORT(TRANSCRIPTCLEAN.out.map{it}.set { ch_report })
+        GENERATE_REPORT(ch_transcriptclean_res.collect()).set { ch_report }
     }
 
     //
